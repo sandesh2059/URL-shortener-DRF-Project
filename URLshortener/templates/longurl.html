@@ -25,6 +25,7 @@
             <tr>
                 <th>Original URL</th>
                 <th>Short URL</th>
+                <th>clicks</th>
             </tr>
         </thead>
         <tbody>
@@ -44,6 +45,10 @@
                             Not created
                         {% endif %}
                     </td>
+                    
+                        <td>
+                            {{ url.clicks }}
+                        </td>
                 </tr>
             {% empty %}
                 <tr>
