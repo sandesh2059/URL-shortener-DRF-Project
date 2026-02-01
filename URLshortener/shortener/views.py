@@ -11,11 +11,19 @@ from .utils import base62
 class LongUrlApiView(APIView):
     permission_classes = [permissions.IsAuthenticated ,CanCreateShortURL]
 
+    def get_object(self, short_url, user):
+        return get_object_or_404(UrlShortener, short_url=short_url, user=user)
+
     
-    def get(self, request):
-        urls = UrlShortener.objects.filter(user=request.user)
-        serializer = LongUrlSerializer(urls, many = True)
-        return Response(serializer.data)
+    def get(self, request, short_url=None):
+        if short_url:
+            urls = self.get_object(short_url, request.user)
+            serializer = LongUrlSerializer(urls)
+            return Response(serializer.data)
+        else:
+            urls = UrlShortener.objects.filter(user=request.user)
+            serializer = LongUrlSerializer(urls, many = True)
+            return Response(serializer.data)
     
     def post(self, request):
         serializer = LongUrlSerializer(data=request.data, context = {'request': request})
@@ -28,16 +36,21 @@ class LongUrlApiView(APIView):
             return Response(response_serializer.data)
         return Response(serializer.errors)
     
-class LongUrlApiViewDetail(APIView):
-    def get_object(self, request, pk):
-        try:
-            return UrlShortener.objects.get(pk=pk)
-        except UrlShortener.DoesNotExist:
-            return Response(status=status.HTTP_404_NOT_FOUND)
-    def get(self, request, pk):
-        url = self.get_object(pk)
-        serializer = LongUrlSerializer(url)
-        return Response(serializer.data)
+
+    def put(self, request, short_url):
+        urls = self.get_object(short_url, request.user)
+        serializer = LongUrlSerializer(urls, data = request.data, partial = True, context = {'request': request})
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors)
+    
+    def delete(self, request, short_url):
+        urls = self.get_object(short_url, request.user)
+        urls.delete()
+        return Response(status=204)
+    
+
     
 def longurl_list(request):
     if not request.user.is_authenticated:
