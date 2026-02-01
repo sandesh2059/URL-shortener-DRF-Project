@@ -31,9 +31,14 @@ def loginView(request):
 
         if user is not None:
             login(request, user)
-            return redirect('home')
+            return redirect('longurl-list')
         else:
             messages.info(request, 'invalid username or password')
             
     context={}
     return render(request, 'login.html', context)
+
+
+def logoutUser(request):
+    logout(request)
+    return redirect('login')
