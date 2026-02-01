@@ -28,6 +28,17 @@ class LongUrlApiView(APIView):
             return Response(response_serializer.data)
         return Response(serializer.errors)
     
+class LongUrlApiViewDetail(APIView):
+    def get_object(self, request, pk):
+        try:
+            return UrlShortener.objects.get(pk=pk)
+        except UrlShortener.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+    def get(self, request, pk):
+        url = self.get_object(pk)
+        serializer = LongUrlSerializer(url)
+        return Response(serializer.data)
+    
 def longurl_list(request):
     if not request.user.is_authenticated:
         return redirect('login')
