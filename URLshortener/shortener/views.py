@@ -5,6 +5,7 @@ from rest_framework.response import Response
 from .models import UrlShortener
 from .serializers import LongUrlSerializer
 from .permissions import CanCreateShortURL
+from .utils import base62
 
 
 class LongUrlApiView(APIView):
@@ -12,15 +13,19 @@ class LongUrlApiView(APIView):
 
     
     def get(self, request):
-        urls = UrlShortener.objects.all()
+        urls = UrlShortener.objects.filter(user=request.user)
         serializer = LongUrlSerializer(urls, many = True)
         return Response(serializer.data)
     
     def post(self, request):
         serializer = LongUrlSerializer(data=request.data, context = {'request': request})
         if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
+            url_instance = serializer.save()
+            if not url_instance.short_url:
+                url_instance.short_url = base62(url_instance.id)
+                url_instance.save(update_fields = ['short_url'])
+            response_serializer = LongUrlSerializer(url_instance)
+            return Response(response_serializer.data)
         return Response(serializer.errors)
     
 def longurl_list(request):
@@ -30,19 +35,13 @@ def longurl_list(request):
     return render(request, 'longurl.html', context={'urls':urls})
 
 
-# class CreateshortUrl(APIView):
-#     permission_classes = [permissions.IsAuthenticated, CanCreateShortURL]
-
-#     def get(self, request):
-#         urls = UrlShortener.objects.all()
-#         serializer = ShortUrlSerializer(urls, many=True)
-#         return Response(serializer.data)
-
 
 class RedirectUrl(APIView):
 
     def get(self, request, short_url):
         url = get_object_or_404(UrlShortener, short_url=short_url)
+        url.clicks += 1
+        url.save(update_fields=['clicks']) 
         return redirect(url.original_url)
         
 
