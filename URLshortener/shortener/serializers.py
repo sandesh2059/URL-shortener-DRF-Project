@@ -6,9 +6,7 @@ class LongUrlSerializer(serializers.ModelSerializer):
     class Meta:
         model = UrlShortener
         fields = ['user','original_url', 'short_url']
+        read_only_fields = ['created_at', 'count']
 
-# class ShortUrlSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = UrlShortener
-#         fields = ['user','original_url','short_url']
+
 
