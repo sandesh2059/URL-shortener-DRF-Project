@@ -100,4 +100,9 @@ localhost:8000/register
 5. users can create their own urls but they need special permission from admin
 6. users can manually give the short url for their long urls
 7. users with permission can perform CRUD operations to their urls
+8. users can visit the long url using short url via user interface
+    OR
+```bash
+localhost:8000/shortener/short-url
+```
 
