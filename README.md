@@ -20,31 +20,32 @@ It demonstrates RESTful API Development, CRUD operations, Authentication and pro
 ---
 
 ## Project Structure
+
+```text
 URLshortener/
 │── URLshortener/
-│ │── settings.py
-│ │── urls.py
+│   │── settings.py
+│   │── urls.py
 │── accounts/
-│ │── models.py
-│ │── forms.py
-│ │── views.py
-│ │── urls.py
-|__ shortener/
-| |__ models.py
-| |__ permissions.py
-| |__ serializers.py
-| |__ urls.py
-| |__ utils.py
-| |__ views.py
-|__ templates/
-| |__ home.html
-| |__ login.html
-| |__ longurl.html
-| |__ register.html
+│   │── models.py
+│   │── forms.py
+│   │── views.py
+│   │── urls.py
+│── shortener/
+│   │── models.py
+│   │── permissions.py
+│   │── serializers.py
+│   │── urls.py
+│   │── utils.py
+│   │── views.py
+│── templates/
+│   │── home.html
+│   │── login.html
+│   │── longurl.html
+│   │── register.html
 │── manage.py
 │── README.md
-
----
+```
 
 
 
