@@ -1,5 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from rest_framework import status, permissions
+from rest_framework.authentication import SessionAuthentication, TokenAuthentication
+from django.contrib.auth.decorators import login_required
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from .models import UrlShortener
@@ -10,7 +12,7 @@ from .utils import base62
 
 class LongUrlApiView(APIView):
     permission_classes = [permissions.IsAuthenticated ,CanCreateShortURL]
-
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
     def get_object(self, short_url, user):
         return get_object_or_404(UrlShortener, short_url=short_url, user=user)
 
@@ -67,5 +69,9 @@ class RedirectUrl(APIView):
         url.clicks += 1
         url.save(update_fields=['clicks']) 
         return redirect(url.original_url)
+
+@login_required   
+def url_dashboard(request):
+    return render(request, 'url_dashboard.html')
         
 
