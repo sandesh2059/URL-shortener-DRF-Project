@@ -86,4 +86,18 @@ python manage.py createsuperuser
 python manage.py runserver
 ```
 
+### 8. enter the url in browser
+```bash
+localhost:8000/register
+```
+
+## Other functions of the app
+
+1. users can register themselves
+2. users can login using their username and password
+3. users can logout
+4. users can see all the already existing urls created by different users
+5. users can create their own urls but they need special permission from admin
+6. users can manually give the short url for their long urls
+7. users with permission can perform CRUD operations to their urls
 
