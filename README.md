@@ -19,7 +19,32 @@ It demonstrates RESTful API Development, CRUD operations, Authentication and pro
 - sqlparse==0.5.5
 ---
 
+## Project Structure
+URLshortener/
+│── URLshortener/
+│ │── settings.py
+│ │── urls.py
+│── accounts/
+│ │── models.py
+│ │── forms.py
+│ │── views.py
+│ │── urls.py
+|__ shortener/
+| |__ models.py
+| |__ permissions.py
+| |__ serializers.py
+| |__ urls.py
+| |__ utils.py
+| |__ views.py
+|__ templates/
+| |__ home.html
+| |__ login.html
+| |__ longurl.html
+| |__ register.html
+│── manage.py
+│── README.md
 
+---
 
 
 
