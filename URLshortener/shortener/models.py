@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 
 class UrlShortener(models.Model):
+    id = models.AutoField(primary_key=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     original_url = models.URLField()
     short_url = models.CharField(max_length=10, unique=True)

@@ -1,1 +1,41 @@
-<h1>home page</h1>
+<h1>welcome to home page.</h1>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>URL Shortener</title>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 80%;
+            margin: 20px auto;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Logout -->
+    <div style="width: 80%; margin: 10px auto; text-align: right;">
+        <form method="post" action="{% url 'logout' %}">
+            {% csrf_token %}
+            <button type="submit">Logout</button>
+        </form>
+    </div>
+
+    
+    <h2>Create Short URL</h2>
+    <form method="post">
+        {% csrf_token %}
+        <label>Original URL:</label>
+        <input type="url" name="original_url" required>
+        <button type="submit">Shorten</button>
+    </form>
+
+    {% if short_url %}
+        <p>Short URL: <a href="{{ short_url }}">{{ short_url }}</a></p>
+    {% endif %}
+</body>
+</html>

@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>URL Shortener</title>
+</head>
+<body>
+    <div>
+        <form method="post" action="{% url 'logout' %}">
+            {% csrf_token %}
+            <button type="submit">Logout</button>
+        </form>
+    </div>
+
+    <h1>URL Shortener</h1>
+    
+    <div>
+        <h2>Create New URL</h2>
+        <form id="create-url-form">
+            <div>
+                <label>Original URL:</label>
+                <input type="url" id="original_url" required>
+            </div>
+            <div>
+                <label>Custom Short URL (optional):</label>
+                <input type="text" id="short_url">
+            </div>
+            <button type="submit">Create</button>
+        </form>
+    </div>
+    
+    <hr>
+    
+    <h2>All URLs</h2>
+    <table>
+        <tr>
+            <th>Original URL</th>
+            <th>Short URL</th>
+            <th>Clicks</th>
+            <th>Actions</th>
+        </tr>
+        <tbody id="urls-table-body">
+        </tbody>
+    </table>
+
+    <script>
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    const csrftoken = getCookie('csrftoken');
+
+    document.addEventListener('DOMContentLoaded', function () {
+        loadURLs();
+
+        document.getElementById('create-url-form').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const formData = {
+                original_url: document.getElementById('original_url').value,
+                short_url: document.getElementById('short_url').value || ''
+            };
+
+            fetch('/shortener/longurl/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrftoken
+                },
+                credentials: 'same-origin',
+                body: JSON.stringify(formData)
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.id) {
+                    loadURLs();
+                    document.getElementById('original_url').value = '';
+                    document.getElementById('short_url').value = '';
+                } else {
+                    alert(JSON.stringify(data));
+                }
+            })
+            .catch(err => console.error(err));
+        });
+    });
+
+    function loadURLs() {
+        fetch('/shortener/longurl/', {
+            credentials: 'same-origin'
+        })
+        .then(res => res.json())
+        .then(data => displayURLs(data))
+        .catch(err => console.error(err));
+    }
+
+    function displayURLs(urls) {
+        const tbody = document.getElementById('urls-table-body');
+        tbody.innerHTML = '';
+
+        urls.forEach(url => {
+            const row = document.createElement('tr');
+
+            row.innerHTML = `
+                <td>${url.original_url}</td>
+                <td>
+                    <a href="/shortener/${url.short_url}/" target="_blank">
+                        ${url.short_url}
+                    </a>
+                </td>
+                <td>${url.clicks}</td>
+                <td>
+                    <button onclick="deleteURL('${url.short_url}')">Delete</button>
+                </td>
+            `;
+
+            tbody.appendChild(row);
+        });
+    }
+
+    function deleteURL(short_url) {
+        if (!confirm('Delete this URL?')) return;
+
+        fetch(`/shortener/longurl/${short_url}/`, {
+            method: 'DELETE',
+            headers: {
+                'X-CSRFToken': csrftoken
+            },
+            credentials: 'same-origin'
+        })
+        .then(() => loadURLs())
+        .catch(err => console.error(err));
+    }
+</script>
+
+</body>
+</html>
